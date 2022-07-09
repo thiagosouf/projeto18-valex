@@ -132,6 +132,16 @@ export async function updateCard(id:number, password:string){
   return result.rows[0];
 }
 
+export async function updateBlock(id:number, status:boolean){
+  const result = await connection.query(`
+  UPDATE cards SET "isBlocked" = $1 Where id = $2`,[status,id]
+  )
+
+  return result.rows[0];
+}
+
+
+
 export async function remove(id: number) {
   connection.query<any, [number]>("DELETE FROM cards WHERE id=$1", [id]);
 }
