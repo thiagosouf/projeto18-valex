@@ -124,6 +124,14 @@ export async function update(id: number, cardData: CardUpdateData) {
   );
 }
 
+export async function updateCard(id:number, password:string){
+  const result = await connection.query(`
+  UPDATE cards SET password = $1 Where id = $2`,[password,id]
+  )
+
+  return result.rows[0];
+}
+
 export async function remove(id: number) {
   connection.query<any, [number]>("DELETE FROM cards WHERE id=$1", [id]);
 }

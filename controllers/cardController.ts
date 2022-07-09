@@ -1,6 +1,7 @@
 import {connection} from "../database.js";
 import { Request, Response } from "express";
-import { findByTypeAndEmployeeId, insert, buscarKey } from "../repositories/cardRepository.js"
+import { findByTypeAndEmployeeId, insert, buscarKey, findById, updateCard } from "../repositories/cardRepository.js"
+import { expiration } from "../utils/sqlUtils.js";
 import Cryptr from "cryptr"
 
 
@@ -54,4 +55,30 @@ export async function createCard(req: Request, res: Response) {
     console.log(apiKey)
 
     res.json(apiKey);
+}
+
+export async function activationCard(req: Request, res: Response){
+    const {
+        id,
+        securityCode
+    } = req.body;
+    let {password} = req.body;
+
+    
+
+    const checkCard = await findById(id)
+    console.log(checkCard)
+    if(!checkCard){res.send("Cartão inválido!")}
+    const cvc = cryptr.decrypt(checkCard.securityCode)
+    console.log(securityCode, cvc)
+    console.log(!expiration)
+    console.log(checkCard.password)
+    if(securityCode === cvc && (!expiration===false) && (checkCard.password === null) && (password.length === 4)){
+        password = cryptr.encrypt(password);
+        await updateCard(id, password)
+        console.log("Dados VaLIDOS")
+    }
+    else{console.log("Dados Inválidos")}
+
+res.json(id);
 }
