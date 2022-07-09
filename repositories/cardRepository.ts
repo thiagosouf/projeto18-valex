@@ -1,5 +1,6 @@
 import { connection } from "../database.js";
-import { mapObjectToUpdateQuery } from "../utils/sqlUtils.js";
+import { mapObjectToUpdateQuery, nomeCartao } from "../utils/sqlUtils.js";
+import dayjs from "dayjs"
 
 export type TransactionTypes =
   | "groceries"
@@ -68,10 +69,10 @@ export async function findByCardDetails(
 }
 
 export async function insert(cardData: CardInsertData) {
+  let {cardholderName} = cardData
   const {
     employeeId,
     number,
-    cardholderName,
     securityCode,
     expirationDate,
     password,
@@ -80,6 +81,10 @@ export async function insert(cardData: CardInsertData) {
     isBlocked,
     type,
   } = cardData;
+  
+  cardholderName = nomeCartao(cardholderName)
+
+
 
   connection.query(
     `
@@ -122,3 +127,13 @@ export async function update(id: number, cardData: CardUpdateData) {
 export async function remove(id: number) {
   connection.query<any, [number]>("DELETE FROM cards WHERE id=$1", [id]);
 }
+
+export async function buscarKey(apiKey:string, employeeId:number){
+  const result = await connection.query<Card, [string, number]>(`
+  SELECT name, "apiKey", "fullName", cpf, email FROM employees
+  JOIN companies ON employees."companyId" = companies.id
+  WHERE "apiKey" = $1
+  AND employees.id = $2`,[apiKey,employeeId])
+
+  return result.rows.length;
+} 
