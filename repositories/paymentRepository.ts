@@ -33,3 +33,13 @@ export async function insert(paymentData: PaymentInsertData) {
     [cardId, businessId, amount]
   );
 }
+
+export async function sumPayment(cardId: number) {
+  const result = await connection.query<Payment, [number]>(
+`SELECT SUM(amount) AS total
+FROM payments
+WHERE "cardId"=$1`,
+[cardId] 
+)
+return result.rows[0];
+};

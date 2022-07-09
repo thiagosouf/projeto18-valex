@@ -1,6 +1,8 @@
 import {connection} from "../database.js";
 import { Request, Response } from "express";
 import { findByTypeAndEmployeeId, insert, buscarKey, findById, updateCard } from "../repositories/cardRepository.js"
+import { findByCardId, sumPayment} from "../repositories/paymentRepository.js"
+import { findRechargeId, sumRecharge } from "../repositories/rechargeRepository.js"
 import { expiration } from "../utils/sqlUtils.js";
 import Cryptr from "cryptr"
 
@@ -81,4 +83,34 @@ export async function activationCard(req: Request, res: Response){
     else{console.log("Dados Inválidos")}
 
 res.json(id);
+}
+
+export async function balanceCard(req: Request, res: Response){
+    const {
+        id,
+        number,
+        securityCode,
+        password
+    } = req.body;
+
+    const checkCard = await findById(id)
+    console.log(checkCard)
+    const cvc = cryptr.decrypt(checkCard.securityCode)
+    const decryptPassword = cryptr.decrypt(checkCard.password)
+    if(!checkCard && (securityCode !== cvc) && (password !== decryptPassword) && (number !== checkCard.number)){res.send("Cartão inválido!")}
+    const transactions = await findByCardId(id);
+    const recharges = await findRechargeId(id);
+    const amountPay = await sumPayment(id);
+    const amountRecharge = await sumRecharge(id);
+
+
+    const pay = Object.values(amountPay).join()
+    const recharge = Object.values(amountRecharge).join()
+    const balance = parseInt(recharge) - parseInt(pay)
+    console.log(balance)
+
+
+    const result = {"balance":balance, transactions, recharges}
+
+    res.json(result);
 }
