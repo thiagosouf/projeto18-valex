@@ -5,6 +5,8 @@ export interface Recharge {
   cardId: number;
   timestamp: Date;
   amount: number;
+  password: string;
+  sum: number;
 }
 export type RechargeInsertData = Omit<Recharge, "id" | "timestamp">;
 
@@ -35,3 +37,14 @@ WHERE "cardId"=$1`,
 )
 return result.rows[0];
 };
+
+export async function findRechardId(apiKey:string, idCard:number){
+  const result = await connection.query<Recharge, [string, number]>(`
+  select cards.*, companies.name from employees
+  join companies on employees."companyId" = companies.id
+  join cards on employees.id = cards."employeeId"
+  where "apiKey" = $1
+  and cards.id = $2`, [apiKey,idCard])
+
+  return result.rows
+}

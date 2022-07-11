@@ -154,4 +154,5 @@ export async function buscarKey(apiKey:string, employeeId:number){
   AND employees.id = $2`,[apiKey,employeeId])
 
   return result.rows.length;
-} 
+}
+
