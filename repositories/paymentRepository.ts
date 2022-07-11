@@ -6,6 +6,8 @@ export interface Payment {
   businessId: number;
   timestamp: Date;
   amount: number;
+  password: string;
+  isBlocked: boolean;
 }
 export type PaymentWithBusinessName = Payment & { businessName: string };
 export type PaymentInsertData = Omit<Payment, "id" | "timestamp">;
@@ -43,3 +45,16 @@ WHERE "cardId"=$1`,
 )
 return result.rows[0];
 };
+
+export async function findPayment(cardId:number, idBusinesses:number){
+  const result = await connection.query<Payment, [number, number]>(
+    `
+    select cards.password, cards."isBlocked" from payments
+    join cards on cards.id = payments."cardId"
+    join businesses on businesses.id = payments."businessId"
+    where "cardId" = $1
+    and "businessId" = $2`,[cardId, idBusinesses]
+  )
+  return result.rows[0];
+
+}

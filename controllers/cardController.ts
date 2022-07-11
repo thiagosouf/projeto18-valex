@@ -1,6 +1,11 @@
 import {connection} from "../database.js";
 import { Request, Response } from "express";
-import { findByTypeAndEmployeeId, insert, buscarKey, findById, updateCard, updateBlock } from "../repositories/cardRepository.js"
+import { findByTypeAndEmployeeId,
+         insert,
+         buscarKey,
+         findById,
+         updateCard,
+         updateBlock } from "../repositories/cardRepository.js"
 import { findByCardId, sumPayment} from "../repositories/paymentRepository.js"
 import { findRechargeId, sumRecharge } from "../repositories/rechargeRepository.js"
 import { expiration } from "../utils/sqlUtils.js";
@@ -115,34 +120,32 @@ export async function balanceCard(req: Request, res: Response){
     res.json(result);
 }
 
+export async function blockCard(req: Request, res: Response){
+    const {
+        id,
+        password
+    } = req.body;
 
-
-    export async function blockCard(req: Request, res: Response){
-        const {
-            id,
-            password
-        } = req.body;
-    
-        const checkCard = await findById(id)
-        const decryptPassword = cryptr.decrypt(checkCard.password)
-        if ((checkCard)  && (password === decryptPassword) && (!expiration===false) && (checkCard.isBlocked === false)){
-            const result = await updateBlock(id, true)
-            res.json(result)
-        }
-        else{res.json(id)}
+    const checkCard = await findById(id)
+    const decryptPassword = cryptr.decrypt(checkCard.password)
+    if ((checkCard)  && (password === decryptPassword) && (!expiration===false) && (checkCard.isBlocked === false)){
+        const result = await updateBlock(id, true)
+        res.json(result)
     }
+    else{res.json(id)}
+}
 
-    export async function desBlockCard(req: Request, res: Response){
-        const {
-            id,
-            password
-        } = req.body;
-    
-        const checkCard = await findById(id)
-        const decryptPassword = cryptr.decrypt(checkCard.password)
-        if ((checkCard)  && (password === decryptPassword) && (!expiration===false) && (checkCard.isBlocked === true)){
-            const result = await updateBlock(id, false)
-            res.json(result)
-        }
-        else{res.json(id)}
+export async function desBlockCard(req: Request, res: Response){
+    const {
+        id,
+        password
+    } = req.body;
+
+    const checkCard = await findById(id)
+    const decryptPassword = cryptr.decrypt(checkCard.password)
+    if ((checkCard)  && (password === decryptPassword) && (!expiration===false) && (checkCard.isBlocked === true)){
+        const result = await updateBlock(id, false)
+        res.json(result)
     }
+    else{res.json(id)}
+}

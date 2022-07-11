@@ -22,7 +22,7 @@ export function nomeCartao(fullName:string){
   return nome.trim().toUpperCase()
 }
 
-export function expiration(cardDate:string){ //expi
+export function expiration(cardDate:string){ 
   const array = cardDate.split("/")
   const m = String (new Date().getMonth()+1).padStart(2,'0');
   const y = String (new Date().getFullYear()-2000).padStart(2,'0');
