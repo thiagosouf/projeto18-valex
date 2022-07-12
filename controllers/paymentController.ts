@@ -3,7 +3,7 @@ import { findById } from "../repositories/cardRepository.js";
 import { sumRecharge } from "../repositories/rechargeRepository.js";
 import { findBusiness } from "../repositories/businessRepository.js";
 import { insert } from "../repositories/paymentRepository.js";
-import { expiration } from "../utils/sqlUtils.js";
+import { expiration } from "../utils/cardUtils.js";
 
 import Cryptr from "cryptr"
 
@@ -17,7 +17,6 @@ const{
     idBusinesses,
     amount
 } = req.body
-//amount deve ser maior que 0
 if(amount>0){
 const checkPay = await findById(cardId)
 const checkBalance = await sumRecharge(cardId)

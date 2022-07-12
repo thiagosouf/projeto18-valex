@@ -1,6 +1,6 @@
 import { connection } from "../database.js";
-import { mapObjectToUpdateQuery, nomeCartao } from "../utils/sqlUtils.js";
-import dayjs from "dayjs"
+import { mapObjectToUpdateQuery } from "../utils/sqlUtils.js";
+import { nomeCartao } from "../utils/cardUtils.js";
 
 export type TransactionTypes =
   | "groceries"
