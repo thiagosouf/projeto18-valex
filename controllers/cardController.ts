@@ -8,7 +8,7 @@ import { findByTypeAndEmployeeId,
          updateBlock } from "../repositories/cardRepository.js"
 import { findByCardId, sumPayment} from "../repositories/paymentRepository.js"
 import { findRechargeId, sumRecharge } from "../repositories/rechargeRepository.js"
-import { expiration } from "../utils/sqlUtils.js";
+import { expiration } from "../utils/cardUtils.js";
 import Cryptr from "cryptr"
 
 
@@ -58,9 +58,6 @@ export async function createCard(req: Request, res: Response) {
     } else {
         console.log("Usuario não encontrado!")
     }
-    
-    console.log(apiKey)
-
     res.json(apiKey);
 }
 
@@ -74,12 +71,8 @@ export async function activationCard(req: Request, res: Response){
     
 
     const checkCard = await findById(id)
-    console.log(checkCard)
     if(!checkCard){res.send("Cartão inválido!")}
     const cvc = cryptr.decrypt(checkCard.securityCode)
-    console.log(securityCode, cvc)
-    console.log(!expiration)
-    console.log(checkCard.password)
     if(securityCode === cvc && (!expiration===false) && (checkCard.password === null) && (password.length === 4)){
         password = cryptr.encrypt(password);
         await updateCard(id, password)
@@ -99,7 +92,6 @@ export async function balanceCard(req: Request, res: Response){
     } = req.body;
 
     const checkCard = await findById(id)
-    console.log(checkCard)
     const cvc = cryptr.decrypt(checkCard.securityCode)
     const decryptPassword = cryptr.decrypt(checkCard.password)
     if(!checkCard && (securityCode !== cvc) && (password !== decryptPassword) && (number !== checkCard.number)){res.send("Cartão inválido!")} //trocar 
@@ -112,8 +104,6 @@ export async function balanceCard(req: Request, res: Response){
     const pay = Object.values(amountPay).join()
     const recharge = Object.values(amountRecharge).join()
     const balance = parseInt(recharge) - parseInt(pay)
-    console.log(balance)
-
 
     const result = {"balance":balance, transactions, recharges}
 

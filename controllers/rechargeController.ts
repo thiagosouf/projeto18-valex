@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { findRechardId, insert } from "../repositories/rechargeRepository.js";
-import { expiration } from "../utils/sqlUtils.js";
+import { expiration } from "../utils/cardUtils.js";
 
 export async function createRecharge(req: Request, res: Response){
     const apiKey = req.header("x-api-key");
